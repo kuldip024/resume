@@ -1,0 +1,152 @@
+name: 🚀 Deploy — Development
+
+on:
+  push:
+    branches:
+      - dev
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - dev
+      - develop
+
+concurrency:
+  group: deploy-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEPLOY_ENV: development
+  NODE_ENV: development
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1 · Validate & Lint
+  # ─────────────────────────────────────────────
+  validate:
+    name: 🔍 Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+        with:
+          target: src/
+          css: true
+
+      - name: Check links (dev — non-blocking)
+        uses: lycheeverse/lychee-action@v1
+        continue-on-error: true
+        with:
+          args: --verbose --no-progress './src/**/*.html'
+          fail: false
+
+  # ─────────────────────────────────────────────
+  # JOB 2 · Build Dev Bundle
+  # ─────────────────────────────────────────────
+  build:
+    name: 🔨 Build
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.meta.outputs.artifact }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set build metadata
+        id: meta
+        run: |
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          echo "sha=${SHA_SHORT}" >> $GITHUB_OUTPUT
+          echo "artifact=resume-dev-${SHA_SHORT}" >> $GITHUB_OUTPUT
+          echo "Build SHA: ${SHA_SHORT}"
+
+      - name: Inject environment into HTML
+        run: |
+          sed -i 's|<meta charset="UTF-8" />|<meta charset="UTF-8" />\n  <meta name="deploy-env" content="development" />\n  <meta name="build-sha" content="${{ steps.meta.outputs.sha }}" />|' src/index.html
+          echo "<!-- DEV BUILD · ${{ steps.meta.outputs.sha }} · $(date -u) -->" >> src/index.html
+
+      - name: Create build artifact
+        run: |
+          mkdir -p dist
+          cp -r src/. dist/
+          echo "Build complete. Files:"
+          ls -lh dist/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact }}
+          path: dist/
+          retention-days: 7
+
+  # ─────────────────────────────────────────────
+  # JOB 3 · Deploy to Dev (GitHub Pages – dev env)
+  # ─────────────────────────────────────────────
+  deploy-dev:
+    name: 🌐 Deploy → Dev
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    environment:
+      name: development
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Comment deploy URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **Dev deploy ready!**\n\n🔗 URL: ${{ steps.deploy.outputs.page_url }}\n📦 Build: \`${{ needs.build.outputs.artifact-name }}\``
+            })
+
+  # ─────────────────────────────────────────────
+  # JOB 4 · Notify
+  # ─────────────────────────────────────────────
+  notify:
+    name: 📢 Notify
+    needs: [deploy-dev]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Status summary
+        run: |
+          echo "═══════════════════════════════════════"
+          echo "  DEV DEPLOY STATUS"
+          echo "  Branch  : ${{ github.ref_name }}"
+          echo "  Commit  : ${{ github.sha }}"
+          echo "  Result  : ${{ needs.deploy-dev.result }}"
+          echo "  Actor   : ${{ github.actor }}"
+          echo "═══════════════════════════════════════"

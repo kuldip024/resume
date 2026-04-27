@@ -1,0 +1,265 @@
+name: 🏁 Deploy — Production
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to confirm production deployment'
+        required: true
+        default: ''
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false   # Never cancel in-flight prod deploys
+
+env:
+  DEPLOY_ENV: production
+  NODE_ENV: production
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1 · Guard — manual trigger safety check
+  # ─────────────────────────────────────────────
+  guard:
+    name: 🛡️ Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manual trigger confirmation
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "DEPLOY" ]; then
+            echo "❌ Confirmation failed. Type DEPLOY to proceed."
+            exit 1
+          fi
+          echo "✅ Manual deploy confirmed."
+
+      - name: Branch guard
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Branch/Ref: ${{ github.ref_name }}"
+
+  # ─────────────────────────────────────────────
+  # JOB 2 · Validate (strict for prod)
+  # ─────────────────────────────────────────────
+  validate:
+    name: 🔍 Validate (strict)
+    needs: guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate HTML (fail on warnings)
+        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+        with:
+          target: src/
+          css: true
+
+      - name: Link check (blocking for prod)
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --verbose --no-progress './src/**/*.html'
+          fail: true
+
+  # ─────────────────────────────────────────────
+  # JOB 3 · Build Production Bundle
+  # ─────────────────────────────────────────────
+  build:
+    name: 🔨 Build (production-optimised)
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.meta.outputs.artifact }}
+      version: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set build metadata
+        id: meta
+        run: |
+          SHA_SHORT=$(git rev-parse --short HEAD)
+          VERSION="${{ github.ref_name }}-${SHA_SHORT}"
+          echo "sha=${SHA_SHORT}"        >> $GITHUB_OUTPUT
+          echo "version=${VERSION}"      >> $GITHUB_OUTPUT
+          echo "artifact=resume-prod-${SHA_SHORT}" >> $GITHUB_OUTPUT
+
+      - name: Inject environment into HTML
+        run: |
+          # Inject production meta tags
+          sed -i 's|<meta charset="UTF-8" />|<meta charset="UTF-8" />\n  <meta name="deploy-env" content="production" />\n  <meta name="build-version" content="${{ steps.meta.outputs.version }}" />\n  <meta name="build-date" content="'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'" />|' src/index.html
+
+          # Inject canonical URL (update with your actual domain)
+          sed -i 's|</head>|  <link rel="canonical" href="https://yourusername.github.io/resume/" />\n</head>|' src/index.html
+
+          # Production comment
+          echo "<!-- PROD BUILD · ${{ steps.meta.outputs.version }} · $(date -u) -->" >> src/index.html
+
+      - name: Minify HTML (optional — requires node)
+        run: |
+          # Install html-minifier if node is available
+          if command -v npx &> /dev/null; then
+            npx --yes html-minifier-terser \
+              --collapse-whitespace \
+              --remove-comments \
+              --remove-optional-tags \
+              --remove-redundant-attributes \
+              --remove-script-type-attributes \
+              --remove-tag-whitespace \
+              --use-short-doctype \
+              --minify-css true \
+              --minify-js true \
+              -o dist/index.html \
+              src/index.html
+            echo "✅ Minified HTML"
+          else
+            mkdir -p dist
+            cp -r src/. dist/
+            echo "⚠️ Skipped minification (node not available)"
+          fi
+
+      - name: Generate sitemap
+        run: |
+          cat > dist/sitemap.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+            <url>
+              <loc>https://yourusername.github.io/resume/</loc>
+              <lastmod>$(date -u +%Y-%m-%d)</lastmod>
+              <changefreq>monthly</changefreq>
+              <priority>1.0</priority>
+            </url>
+          </urlset>
+          EOF
+          echo "✅ Sitemap generated"
+
+      - name: Generate robots.txt
+        run: |
+          cat > dist/robots.txt << 'EOF'
+          User-agent: *
+          Allow: /
+          Sitemap: https://yourusername.github.io/resume/sitemap.xml
+          EOF
+
+      - name: File size report
+        run: |
+          echo "── PRODUCTION BUILD MANIFEST ──────────────────"
+          find dist/ -type f | sort | while read f; do
+            size=$(du -sh "$f" | cut -f1)
+            echo "  $size  ${f#dist/}"
+          done
+          echo "────────────────────────────────────────────────"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.meta.outputs.artifact }}
+          path: dist/
+          retention-days: 30
+
+  # ─────────────────────────────────────────────
+  # JOB 4 · Deploy → Production (with environment protection)
+  # ─────────────────────────────────────────────
+  deploy-prod:
+    name: 🏁 Deploy → Production
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Verify deployment
+        run: |
+          sleep 10
+          echo "🔍 Verifying deployment at ${{ steps.deploy.outputs.page_url }}"
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "${{ steps.deploy.outputs.page_url }}" || echo "000")
+          echo "HTTP Status: ${HTTP_STATUS}"
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "✅ Deployment verified successfully!"
+          else
+            echo "⚠️ Unexpected status ${HTTP_STATUS} — check manually."
+          fi
+
+  # ─────────────────────────────────────────────
+  # JOB 5 · Create GitHub Release tag
+  # ─────────────────────────────────────────────
+  tag-release:
+    name: 🏷️ Tag Release
+    needs: [build, deploy-prod]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create release tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha.substring(0, 7);
+            const date = new Date().toISOString().split('T')[0];
+            const tagName = `prod-${date}-${sha}`;
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${tagName}`,
+              sha: context.sha
+            });
+
+            console.log(`✅ Created tag: ${tagName}`);
+
+  # ─────────────────────────────────────────────
+  # JOB 6 · Notify
+  # ─────────────────────────────────────────────
+  notify:
+    name: 📢 Notify
+    needs: [deploy-prod]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Status summary
+        run: |
+          echo "═══════════════════════════════════════════"
+          echo "  PRODUCTION DEPLOY STATUS"
+          echo "  Ref     : ${{ github.ref_name }}"
+          echo "  Commit  : ${{ github.sha }}"
+          echo "  Version : ${{ needs.build.outputs.version }}"
+          echo "  Result  : ${{ needs.deploy-prod.result }}"
+          echo "  Actor   : ${{ github.actor }}"
+          echo "═══════════════════════════════════════════"

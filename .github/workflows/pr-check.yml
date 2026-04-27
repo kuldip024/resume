@@ -1,0 +1,40 @@
+name: ✅ PR Checks
+
+on:
+  pull_request:
+    branches: [main, master, dev, develop]
+
+jobs:
+  pr-check:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
+        with:
+          target: src/
+          css: true
+
+      - name: Check file sizes (warn if resume > 100KB)
+        run: |
+          SIZE=$(du -sb src/index.html | awk '{print $1}')
+          echo "Resume size: ${SIZE} bytes"
+          if [ "$SIZE" -gt 102400 ]; then
+            echo "⚠️ Warning: resume is larger than 100KB (${SIZE} bytes). Consider optimizing."
+          else
+            echo "✅ Size OK"
+          fi
+
+      - name: Summary
+        run: |
+          echo "### ✅ PR Checks Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| HTML Validation | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| File Size | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Ready to merge into \`${{ github.base_ref }}\`" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume — Kuldip Ramavat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f0e0b;
+      --paper: #f5f2ec;
+      --accent: #c8392b;
+      --muted: #7a7570;
+      --rule: #d4cfc8;
+      --col: 680px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* ── SIDEBAR RULE ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar-rule {
+      background: var(--accent);
+      position: sticky;
+      top: 0;
+      align-self: stretch;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: var(--col);
+      margin: 0 auto;
+      padding: 80px 40px 120px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── HEADER ── */
+    header {
+      margin-bottom: 64px;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 48px;
+      position: relative;
+    }
+
+    .issue-line {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .issue-line span { color: var(--accent); }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 12vw, 96px);
+      letter-spacing: 0.02em;
+      line-height: 0.9;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    h1 em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 18px;
+      line-height: 1.4;
+    }
+
+    .contacts {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 24px;
+    }
+
+    .contacts a {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+
+    .contacts a:hover { color: var(--accent); }
+    .contacts a::before { content: '↗'; font-size: 9px; }
+
+    /* ── SECTION ── */
+    section { margin-bottom: 56px; animation: fadeUp 0.6s ease both; }
+    section:nth-child(2) { animation-delay: 0.1s; }
+    section:nth-child(3) { animation-delay: 0.15s; }
+    section:nth-child(4) { animation-delay: 0.2s; }
+    section:nth-child(5) { animation-delay: 0.25s; }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* ── EXPERIENCE ENTRY ── */
+    .entry { margin-bottom: 40px; }
+
+    .entry-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .entry-title {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .entry-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .entry-org {
+      font-size: 14px;
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-weight: 300;
+    }
+
+    .entry-body {
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.72;
+      color: var(--ink);
+    }
+
+    .entry-body p + p { margin-top: 8px; }
+
+    /* ── SKILLS GRID ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 2px;
+    }
+
+    .skill-item {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      padding: 10px 14px;
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      z-index: 0;
+    }
+
+    .skill-item:hover::before { transform: translateX(0); }
+    .skill-item span { position: relative; z-index: 1; }
+    .skill-item:hover span { color: var(--paper); }
+
+    /* ── EDUCATION ── */
+    .edu-entry {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 24px;
+      align-items: start;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .edu-entry:first-of-type { border-top: 1px solid var(--rule); }
+
+    .edu-degree {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .edu-school {
+      font-size: 14px;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--muted);
+    }
+
+    /* ── PULL QUOTE ── */
+    .pull-quote {
+      border-left: 3px solid var(--accent);
+      padding: 16px 24px;
+      margin: 40px 0;
+      background: rgba(200, 57, 43, 0.04);
+    }
+
+    .pull-quote p {
+      font-size: 22px;
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .env-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid currentColor;
+    }
+
+    .env-badge.dev  { color: #2563eb; }
+    .env-badge.prod { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      main { padding: 48px 24px 80px; }
+      h1 { font-size: clamp(52px, 16vw, 72px); }
+      .entry-header { grid-template-columns: 1fr; }
+      .edu-entry { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body::before { display: none; }
+      .sidebar-rule { display: none; }
+      main { padding: 32px; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="sidebar-rule"></div>
+
+  <main>
+    <!-- ── HEADER ── -->
+    <header>
+      <div class="issue-line">
+        <span>Curriculum Vitae</span>
+        &nbsp;·&nbsp; Software Engineer &nbsp;·&nbsp; <span id="year"></span>
+      </div>
+
+      <h1>Ramavat<br /><em>Kuldip</em></h1>
+
+      <p class="tagline">
+        Building systems that scale, products that matter,<br />
+        and interfaces people actually enjoy using.
+      </p>
+
+      <div class="contacts">
+        <a href="mailto:you@email.com">zoro.com</a>
+        <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+        <a href="#">Portfolio</a>
+        <a href="#">+91 98765 43210</a>
+      </div>
+    </header>
+
+    <!-- ── PULL QUOTE ── -->
+    <div class="pull-quote">
+      <p>"I care about the craft — clean architecture, thoughtful APIs, and interfaces that feel inevitable in retrospect."</p>
+    </div>
+
+    <!-- ── EXPERIENCE ── -->
+    <section>
+      <div class="section-label">1 year</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Senior Software Engineer</span>
+          <span class="entry-date">2022 — Present</span>
+        </div>
+        <div class="entry-org">Company Name &nbsp;·&nbsp; Location / Remote</div>
+        <div class="entry-body">
+          <p>Led architecture of a microservices platform handling 2M+ daily requests, reducing p95 latency by 40% through strategic caching and query optimization.</p>
+          <p>Drove adoption of CI/CD best practices across 3 engineering teams; reduced production incidents by 60% over 18 months.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Software Engineer</span>
+          <span class="entry-date">2019 — 2022</span>
+        </div>
+        <div class="entry-org">Previous Company &nbsp;·&nbsp; City, State</div>
+        <div class="entry-body">
+          <p>Built and maintained React + Node.js SaaS product serving 50k+ users; shipped 3 major feature releases end-to-end.</p>
+          <p>Designed event-driven data pipeline using Kafka that cut reporting lag from 4 hours to under 90 seconds.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Junior Developer</span>
+          <span class="entry-date">2017 — 2019</span>
+        </div>
+        <div class="entry-org">First Company &nbsp;·&nbsp; Remote</div>
+        <div class="entry-body">
+          <p>Developed REST APIs and internal tooling using Python/Django. Introduced automated test coverage from 12% to 78%.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SKILLS ── -->
+    <section>
+      <div class="section-label">Technical Skills</div>
+      <div class="skills-grid">
+        <div class="skill-item"><span>TypeScript</span></div>
+        <div class="skill-item"><span>React / Next.js</span></div>
+        <div class="skill-item"><span>Node.js</span></div>
+        <div class="skill-item"><span>Python</span></div>
+        <div class="skill-item"><span>Go</span></div>
+        <div class="skill-item"><span>PostgreSQL</span></div>
+        <div class="skill-item"><span>Redis</span></div>
+        <div class="skill-item"><span>Kafka</span></div>
+        <div class="skill-item"><span>Docker</span></div>
+        <div class="skill-item"><span>Kubernetes</span></div>
+        <div class="skill-item"><span>GitHub Actions</span></div>
+        <div class="skill-item"><span>AWS / GCP</span></div>
+        <div class="skill-item"><span>Terraform</span></div>
+        <div class="skill-item"><span>GraphQL</span></div>
+        <div class="skill-item"><span>Figma</span></div>
+        <div class="skill-item"><span>Linux</span></div>
+      </div>
+    </section>
+
+    <!-- ── EDUCATION ── -->
+    <section>
+      <div class="section-label">Education</div>
+
+      <div class="edu-entry">
+        <div>
+          <div class="edu-degree">B.Tech in Computer Science &amp; Engineering</div>
+          <div class="edu-school">Your University Name &nbsp;·&nbsp; Ahmedabad, Gujarat</div>
+        </div>
+        <span class="entry-date">2013 — 2017</span>
+      </div>
+
+      <div class="edu-entry">
+        <div>
+          <div class="edu-degree">AWS Certified Solutions Architect – Associate</div>
+          <div class="edu-school">Amazon Web Services</div>
+        </div>
+        <span class="entry-date">2021</span>
+      </div>
+    </section>
+
+    <!-- ── PROJECTS ── -->
+    <section>
+      <div class="section-label">Selected Projects</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">OpenMetrics Dashboard</span>
+          <span class="entry-date">Open Source</span>
+        </div>
+        <div class="entry-org">github.com/yourusername/openmetrics</div>
+        <div class="entry-body">
+          <p>Real-time observability dashboard built with React, Rust (WASM), and WebSockets. 800+ GitHub stars. Adopted by 3 production teams.</p>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">CLI Deploy Tool</span>
+          <span class="entry-date">2023</span>
+        </div>
+        <div class="entry-org">Internal tooling</div>
+        <div class="entry-body">
+          <p>Zero-downtime deployment orchestrator for multi-env pipelines. Reduced deploy time from 18 min to under 4 min.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer>
+      <span class="footer-note">Last updated <span id="updated"></span> &nbsp;·&nbsp; PDF available on request</span>
+      <span class="env-badge" id="env-badge"></span>
+    </footer>
+  </main>
+</div>
+
+<script>
+  // Inject year & date
+  const y = new Date().getFullYear();
+  document.getElementById('year').textContent = y;
+  document.getElementById('updated').textContent = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+  // Show environment badge from injected ENV variable or meta tag
+  const envMeta = document.querySelector('meta[name="deploy-env"]');
+  const env = (envMeta && envMeta.content) || 'local';
+  const badge = document.getElementById('env-badge');
+  badge.textContent = env.toUpperCase();
+  badge.className = 'env-badge ' + (env === 'production' ? 'prod' : 'dev');
+</script>
+</body>
+</html>
