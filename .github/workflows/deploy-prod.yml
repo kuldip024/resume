@@ -1,4 +1,4 @@
-name: 🏁 Deploy — Production
+name:  Deploy — Production
 
 on:
   push:
@@ -27,17 +27,17 @@ jobs:
   # JOB 1 · Guard — manual trigger safety check
   # ─────────────────────────────────────────────
   guard:
-    name: 🛡️ Guard
+    name:  Guard
     runs-on: ubuntu-latest
     steps:
       - name: Manual trigger confirmation
         if: github.event_name == 'workflow_dispatch'
         run: |
           if [ "${{ github.event.inputs.confirm }}" != "DEPLOY" ]; then
-            echo "❌ Confirmation failed. Type DEPLOY to proceed."
+            echo " Confirmation failed. Type DEPLOY to proceed."
             exit 1
           fi
-          echo "✅ Manual deploy confirmed."
+          echo " Manual deploy confirmed."
 
       - name: Branch guard
         run: |
@@ -48,7 +48,7 @@ jobs:
   # JOB 2 · Validate (strict for prod)
   # ─────────────────────────────────────────────
   validate:
-    name: 🔍 Validate (strict)
+    name:  Validate (strict)
     needs: guard
     runs-on: ubuntu-latest
     steps:
@@ -71,7 +71,7 @@ jobs:
   # JOB 3 · Build Production Bundle
   # ─────────────────────────────────────────────
   build:
-    name: 🔨 Build (production-optimised)
+    name:  Build (production-optimised)
     needs: validate
     runs-on: ubuntu-latest
     outputs:
@@ -118,11 +118,11 @@ jobs:
               --minify-js true \
               -o dist/index.html \
               src/index.html
-            echo "✅ Minified HTML"
+            echo " Minified HTML"
           else
             mkdir -p dist
             cp -r src/. dist/
-            echo "⚠️ Skipped minification (node not available)"
+            echo " Skipped minification (node not available)"
           fi
 
       - name: Generate sitemap
@@ -138,7 +138,7 @@ jobs:
             </url>
           </urlset>
           EOF
-          echo "✅ Sitemap generated"
+          echo " Sitemap generated"
 
       - name: Generate robots.txt
         run: |
@@ -168,7 +168,7 @@ jobs:
   # JOB 4 · Deploy → Production (with environment protection)
   # ─────────────────────────────────────────────
   deploy-prod:
-    name: 🏁 Deploy → Production
+    name:  Deploy → Production
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -202,20 +202,20 @@ jobs:
       - name: Verify deployment
         run: |
           sleep 10
-          echo "🔍 Verifying deployment at ${{ steps.deploy.outputs.page_url }}"
+          echo " Verifying deployment at ${{ steps.deploy.outputs.page_url }}"
           HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "${{ steps.deploy.outputs.page_url }}" || echo "000")
           echo "HTTP Status: ${HTTP_STATUS}"
           if [ "$HTTP_STATUS" = "200" ]; then
-            echo "✅ Deployment verified successfully!"
+            echo " Deployment verified successfully!"
           else
-            echo "⚠️ Unexpected status ${HTTP_STATUS} — check manually."
+            echo " Unexpected status ${HTTP_STATUS} — check manually."
           fi
 
   # ─────────────────────────────────────────────
   # JOB 5 · Create GitHub Release tag
   # ─────────────────────────────────────────────
   tag-release:
-    name: 🏷️ Tag Release
+    name:  Tag Release
     needs: [build, deploy-prod]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
@@ -242,13 +242,13 @@ jobs:
               sha: context.sha
             });
 
-            console.log(`✅ Created tag: ${tagName}`);
+            console.log(` Created tag: ${tagName}`);
 
   # ─────────────────────────────────────────────
   # JOB 6 · Notify
   # ─────────────────────────────────────────────
   notify:
-    name: 📢 Notify
+    name:  Notify
     needs: [deploy-prod]
     runs-on: ubuntu-latest
     if: always()
