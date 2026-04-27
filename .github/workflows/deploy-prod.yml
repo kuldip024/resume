@@ -58,7 +58,7 @@ jobs:
       - name: Validate HTML (fail on warnings)
         uses: Cyb3r-Jak3/html5validator-action@v7.2.0
         with:
-          target: src/
+          root: src/
           css: true
 
       - name: Link check (blocking for prod)

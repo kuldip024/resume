@@ -33,7 +33,7 @@ jobs:
       - name: Validate HTML
         uses: Cyb3r-Jak3/html5validator-action@v7.2.0
         with:
-          target: src/
+          root: src/
           css: true
 
       - name: Check links (dev — non-blocking)
