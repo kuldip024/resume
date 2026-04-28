@@ -14,7 +14,7 @@ resume-deploy/
 │       ├── deploy-prod.yml     ← Auto-deploy on push to main branch
 │       └── pr-check.yml        ← Validates every Pull Request
 ├── src/
-│   └── index.html              ← Your resume (edit this!)
+│   └── index.html              ← Random Resume
 ├── scripts/
 │   └── deploy.sh               ← Local build & serve script
 ├── .gitignore
@@ -77,7 +77,7 @@ Go to **Settings → Environments** and create two environments:
 | Environment | Protection Rules |
 |---|---|
 | `development` | None (auto-deploy) |
-| `production` | ✅ Required reviewers (add yourself) |
+| `production` | Required reviewers (add yourself) |
 
 > This means production deploys will pause and wait for your manual approval before going live.
 
@@ -140,7 +140,7 @@ Go to **Actions → Deploy — Production → Run workflow** and type `DEPLOY` t
 
 ---
 
-## 🌐 Live URLs
+##  Live URLs
 
 | Environment | URL |
 |---|---|
@@ -151,12 +151,11 @@ Go to **Actions → Deploy — Production → Run workflow** and type `DEPLOY` t
 
 ---
 
-## 🛡️ What Each Workflow Does
+##  What Each Workflow Does
 
 ### `deploy-dev.yml`
 | Step | Description |
 |---|---|
-| Validate | HTML5 validator, non-blocking link check |
 | Build | Injects `development` env badge + build SHA |
 | Deploy | Pushes to GitHub Pages dev environment |
 | Notify | Logs deploy summary |
@@ -165,7 +164,6 @@ Go to **Actions → Deploy — Production → Run workflow** and type `DEPLOY` t
 | Step | Description |
 |---|---|
 | Guard | Confirms manual trigger with `DEPLOY` keyword |
-| Validate | HTML5 validator + blocking link check |
 | Build | Injects `production` meta, minifies HTML/CSS/JS |
 | Deploy | Pushes to GitHub Pages production with approval gate |
 | Verify | Curls the live URL to confirm HTTP 200 |
