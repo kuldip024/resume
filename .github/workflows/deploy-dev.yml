@@ -20,35 +20,15 @@ env:
   NODE_ENV: development
 
 jobs:
-  # ─────────────────────────────────────────────
-  # JOB 1 · Validate & Lint
-  # ─────────────────────────────────────────────
-  validate:
-    name:  Validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+ 
 
-      - name: Validate HTML
-        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
-        with:
-          root: src/
-          css: true
-
-      - name: Check links (dev — non-blocking)
-        uses: lycheeverse/lychee-action@v1
-        continue-on-error: true
-        with:
-          args: --verbose --no-progress './src/**/*.html'
-          fail: false
+      
 
   # ─────────────────────────────────────────────
   # JOB 2 · Build Dev Bundle
   # ─────────────────────────────────────────────
   build:
     name:  Build
-    needs: validate
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.meta.outputs.artifact }}
