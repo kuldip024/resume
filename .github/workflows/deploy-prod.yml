@@ -78,7 +78,7 @@ jobs:
         run: |
           mkdir -p dist
           cp -r src/. dist/
-          echo "✅ Files copied to dist/"
+          echo " Files copied to dist/"
           ls dist/
   
       - name: Generate sitemap
