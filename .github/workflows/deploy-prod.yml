@@ -80,28 +80,13 @@ jobs:
           # Production comment
           echo "<!-- PROD BUILD · ${{ steps.meta.outputs.version }} · $(date -u) -->" >> src/index.html
 
-      - name: Minify HTML (optional — requires node)
+      - name: Build dist
         run: |
-          # Install html-minifier if node is available
-          if command -v npx &> /dev/null; then
-            npx --yes html-minifier-terser \
-              --collapse-whitespace \
-              --remove-comments \
-              --remove-optional-tags \
-              --remove-redundant-attributes \
-              --remove-script-type-attributes \
-              --remove-tag-whitespace \
-              --use-short-doctype \
-              --minify-css true \
-              --minify-js true \
-              -o dist/index.html \
-              src/index.html
-            echo " Minified HTML"
-          else
-            mkdir -p dist
-            cp -r src/. dist/
-            echo " Skipped minification (node not available)"
-          fi
+          mkdir -p dist
+          cp -r src/. dist/
+          echo "✅ Files copied to dist/"
+          ls dist/
+  
 
       - name: Generate sitemap
         run: |
