@@ -23,9 +23,7 @@ env:
   NODE_ENV: production
 
 jobs:
-  # ─────────────────────────────────────────────
   # JOB 1 · Guard — manual trigger safety check
-  # ─────────────────────────────────────────────
   guard:
     name:  Guard
     runs-on: ubuntu-latest
@@ -43,10 +41,8 @@ jobs:
         run: |
           echo "Triggered by: ${{ github.event_name }}"
           echo "Branch/Ref: ${{ github.ref_name }}"
-
-  # ─────────────────────────────────────────────
+          
   # JOB 2 · Validate (strict for prod)
-  # ─────────────────────────────────────────────
   validate:
     name:  Validate (strict)
     needs: guard
@@ -67,9 +63,7 @@ jobs:
           args: --verbose --no-progress './src/**/*.html'
           fail: true
 
-  # ─────────────────────────────────────────────
   # JOB 3 · Build Production Bundle
-  # ─────────────────────────────────────────────
   build:
     name:  Build (production-optimised)
     needs: validate
@@ -164,9 +158,7 @@ jobs:
           path: dist/
           retention-days: 30
 
-  # ─────────────────────────────────────────────
   # JOB 4 · Deploy → Production (with environment protection)
-  # ─────────────────────────────────────────────
   deploy-prod:
     name:  Deploy → Production
     needs: build
@@ -211,9 +203,7 @@ jobs:
             echo " Unexpected status ${HTTP_STATUS} — check manually."
           fi
 
-  # ─────────────────────────────────────────────
   # JOB 5 · Create GitHub Release tag
-  # ─────────────────────────────────────────────
   tag-release:
     name:  Tag Release
     needs: [build, deploy-prod]
@@ -244,9 +234,7 @@ jobs:
 
             console.log(` Created tag: ${tagName}`);
 
-  # ─────────────────────────────────────────────
   # JOB 6 · Notify
-  # ─────────────────────────────────────────────
   notify:
     name:  Notify
     needs: [deploy-prod]
