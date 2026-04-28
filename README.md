@@ -1,6 +1,6 @@
 # 📄 Resume — DevEnv/Prod Deployment Automation
 
-A fully automated CI/CD pipeline for deploying a personal resume site to **GitHub Pages**, with separate **development** and **production** environments, validation gates, and release tagging.
+Automated DevEnv/Production deployment pipeline for a personal resume site using GitHub Actions, with environment-specific builds, manual approval gates, and auto release tagging
 
 ---
 
