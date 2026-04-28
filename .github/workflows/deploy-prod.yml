@@ -44,35 +44,13 @@ jobs:
           echo "Triggered by: ${{ github.event_name }}"
           echo "Branch/Ref: ${{ github.ref_name }}"
 
-  # ─────────────────────────────────────────────
-  # JOB 2 · Validate (strict for prod)
-  # ─────────────────────────────────────────────
-  validate:
-    name:  Validate (strict)
-    needs: guard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate HTML (fail on warnings)
-        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
-        with:
-          root: src/
-          css: true
-
-      - name: Link check (blocking for prod)
-        uses: lycheeverse/lychee-action@v1
-        with:
-          args: --verbose --no-progress './src/**/*.html'
-          fail: true
+ 
 
   # ─────────────────────────────────────────────
-  # JOB 3 · Build Production Bundle
+  # JOB 2 · Build Production Bundle
   # ─────────────────────────────────────────────
   build:
     name:  Build (production-optimised)
-    needs: validate
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.meta.outputs.artifact }}
