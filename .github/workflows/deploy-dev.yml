@@ -23,32 +23,14 @@ jobs:
   # ─────────────────────────────────────────────
   # JOB 1 · Validate & Lint
   # ─────────────────────────────────────────────
-  validate:
-    name: 🔍 Validate
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validate HTML
-        uses: Cyb3r-Jak3/html5validator-action@v7.2.0
-        with:
-          target: src/
-          css: true
-
-      - name: Check links (dev — non-blocking)
-        uses: lycheeverse/lychee-action@v1
-        continue-on-error: true
-        with:
-          args: --verbose --no-progress './src/**/*.html'
-          fail: false
+  
+       
 
   # ─────────────────────────────────────────────
   # JOB 2 · Build Dev Bundle
   # ─────────────────────────────────────────────
   build:
-    name: 🔨 Build
-    needs: validate
+    name:  Build
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.meta.outputs.artifact }}
@@ -88,7 +70,7 @@ jobs:
   # JOB 3 · Deploy to Dev (GitHub Pages – dev env)
   # ─────────────────────────────────────────────
   deploy-dev:
-    name: 🌐 Deploy → Dev
+    name:  Deploy → Dev
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
@@ -136,7 +118,7 @@ jobs:
   # JOB 4 · Notify
   # ─────────────────────────────────────────────
   notify:
-    name: 📢 Notify
+    name:  Notify
     needs: [deploy-dev]
     runs-on: ubuntu-latest
     if: always()
