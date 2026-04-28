@@ -1,4 +1,4 @@
-name:  Deploy — Development
+name: 🚀 Deploy — Development
 
 on:
   push:
@@ -20,9 +20,11 @@ env:
   NODE_ENV: development
 
 jobs:
- 
-
-      
+  # ─────────────────────────────────────────────
+  # JOB 1 · Validate & Lint
+  # ─────────────────────────────────────────────
+  
+       
 
   # ─────────────────────────────────────────────
   # JOB 2 · Build Dev Bundle
@@ -68,7 +70,7 @@ jobs:
   # JOB 3 · Deploy to Dev (GitHub Pages – dev env)
   # ─────────────────────────────────────────────
   deploy-dev:
-    name: 🌐 Deploy → Dev
+    name:  Deploy → Dev
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
@@ -109,7 +111,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ` **Dev deploy ready!**\n\n URL: ${{ steps.deploy.outputs.page_url }}\n Build: \`${{ needs.build.outputs.artifact-name }}\``
+              body: `🚀 **Dev deploy ready!**\n\n🔗 URL: ${{ steps.deploy.outputs.page_url }}\n📦 Build: \`${{ needs.build.outputs.artifact-name }}\``
             })
 
   # ─────────────────────────────────────────────
