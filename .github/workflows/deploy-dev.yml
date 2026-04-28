@@ -1,4 +1,4 @@
-name: 🚀 Deploy — Development
+name:  Deploy — Development
 
 on:
   push:
@@ -20,15 +20,8 @@ env:
   NODE_ENV: development
 
 jobs:
-  # ─────────────────────────────────────────────
-  # JOB 1 · Validate & Lint
-  # ─────────────────────────────────────────────
-  
-       
 
-  # ─────────────────────────────────────────────
   # JOB 2 · Build Dev Bundle
-  # ─────────────────────────────────────────────
   build:
     name:  Build
     runs-on: ubuntu-latest
@@ -65,10 +58,7 @@ jobs:
           name: ${{ steps.meta.outputs.artifact }}
           path: dist/
           retention-days: 7
-
-  # ─────────────────────────────────────────────
-  # JOB 3 · Deploy to Dev (GitHub Pages – dev env)
-  # ─────────────────────────────────────────────
+  # JOB 2 · Deploy to Dev (GitHub Pages – dev env)
   deploy-dev:
     name:  Deploy → Dev
     needs: build
@@ -111,12 +101,10 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🚀 **Dev deploy ready!**\n\n🔗 URL: ${{ steps.deploy.outputs.page_url }}\n📦 Build: \`${{ needs.build.outputs.artifact-name }}\``
+              body: ` **Dev deploy ready!**\n\n🔗 URL: ${{ steps.deploy.outputs.page_url }}\n Build: \`${{ needs.build.outputs.artifact-name }}\``
             })
-
-  # ─────────────────────────────────────────────
-  # JOB 4 · Notify
-  # ─────────────────────────────────────────────
+            
+  # JOB 3 · Notify
   notify:
     name:  Notify
     needs: [deploy-dev]
