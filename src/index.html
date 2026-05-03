@@ -1,502 +1,724 @@
-echo "<!-- first deploy -->" >> src/index.html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resume — Kuldip Ramavat</title>
+  <title>Resume — DevOps Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
   <style>
-    :root {
-      --ink: #0f0e0b;
-      --paper: #f5f2ec;
-      --accent: #c8392b;
-      --muted: #7a7570;
-      --rule: #d4cfc8;
-      --col: 680px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { font-size: 16px; scroll-behavior: smooth; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--paper);
-      color: var(--ink);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ── GRAIN OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.6;
-    }
-
-    /* ── SIDEBAR RULE ── */
-    .layout {
-      display: grid;
-      grid-template-columns: 3px 1fr;
-      min-height: 100vh;
-    }
-
-    .sidebar-rule {
-      background: var(--accent);
-      position: sticky;
-      top: 0;
-      align-self: stretch;
-    }
-
-    /* ── MAIN CONTENT ── */
-    main {
-      max-width: var(--col);
-      margin: 0 auto;
-      padding: 80px 40px 120px;
-      animation: fadeUp 0.7s ease both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── HEADER ── */
-    header {
-      margin-bottom: 64px;
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 48px;
-      position: relative;
-    }
-
-    .issue-line {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-      display: flex;
-      gap: 24px;
-      align-items: center;
-    }
-
-    .issue-line span { color: var(--accent); }
-
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(64px, 12vw, 96px);
-      letter-spacing: 0.02em;
-      line-height: 0.9;
-      color: var(--ink);
-      margin-bottom: 8px;
-    }
-
-    h1 em {
-      color: var(--accent);
-      font-style: normal;
-    }
-
-    .tagline {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
-      font-weight: 300;
-      font-style: italic;
-      color: var(--muted);
-      margin-top: 18px;
-      line-height: 1.4;
-    }
-
-    .contacts {
-      margin-top: 28px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 24px;
-    }
-
-    .contacts a {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 300;
-      color: var(--ink);
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
-    }
-
-    .contacts a:hover { color: var(--accent); }
-    .contacts a::before { content: '↗'; font-size: 9px; }
-
-    /* ── SECTION ── */
-    section { margin-bottom: 56px; animation: fadeUp 0.6s ease both; }
-    section:nth-child(2) { animation-delay: 0.1s; }
-    section:nth-child(3) { animation-delay: 0.15s; }
-    section:nth-child(4) { animation-delay: 0.2s; }
-    section:nth-child(5) { animation-delay: 0.25s; }
-
-    .section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 400;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--rule);
-    }
-
-    /* ── EXPERIENCE ENTRY ── */
-    .entry { margin-bottom: 40px; }
-
-    .entry-header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: baseline;
-      margin-bottom: 4px;
-    }
-
-    .entry-title {
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    .entry-date {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      font-weight: 300;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    .entry-org {
+      background: #f0f0f0;
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
-      font-style: italic;
-      color: var(--muted);
-      margin-bottom: 12px;
-      font-weight: 300;
+      color: #1a1a1a;
+      line-height: 1.5;
     }
 
-    .entry-body {
-      font-size: 17px;
-      font-weight: 300;
-      line-height: 1.72;
-      color: var(--ink);
-    }
-
-    .entry-body p + p { margin-top: 8px; }
-
-    /* ── SKILLS GRID ── */
-    .skills-grid {
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 32px auto;
+      background: #ffffff;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.12);
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 2px;
+      grid-template-columns: 68mm 1fr;
     }
 
-    .skill-item {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      padding: 10px 14px;
-      border: 1px solid var(--rule);
-      color: var(--ink);
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
+    /* ── LEFT SIDEBAR ── */
+    .sidebar {
+      background: #1c2b3a;
+      color: #e8edf2;
+      padding: 36px 24px;
     }
 
-    .skill-item::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--accent);
-      transform: translateX(-100%);
-      transition: transform 0.25s ease;
-      z-index: 0;
+    .avatar-box {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: #2e4259;
+      border: 3px solid #4a9ebe;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: #4a9ebe;
+      letter-spacing: -1px;
     }
 
-    .skill-item:hover::before { transform: translateX(0); }
-    .skill-item span { position: relative; z-index: 1; }
-    .skill-item:hover span { color: var(--paper); }
-
-    /* ── EDUCATION ── */
-    .edu-entry {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px 24px;
-      align-items: start;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .edu-entry:first-of-type { border-top: 1px solid var(--rule); }
-
-    .edu-degree {
+    .sidebar-name {
+      font-family: 'Playfair Display', serif;
       font-size: 18px;
-      font-weight: 600;
+      color: #ffffff;
+      text-align: center;
       line-height: 1.3;
       margin-bottom: 4px;
     }
 
-    .edu-school {
-      font-size: 14px;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--muted);
-    }
-
-    /* ── PULL QUOTE ── */
-    .pull-quote {
-      border-left: 3px solid var(--accent);
-      padding: 16px 24px;
-      margin: 40px 0;
-      background: rgba(200, 57, 43, 0.04);
-    }
-
-    .pull-quote p {
-      font-size: 22px;
-      font-style: italic;
-      font-weight: 300;
-      line-height: 1.5;
-      color: var(--ink);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--rule);
-      padding-top: 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .footer-note {
-      font-family: 'DM Mono', monospace;
+    .sidebar-title {
       font-size: 10px;
       font-weight: 300;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-    }
-
-    .env-badge {
-      font-family: 'DM Mono', monospace;
-      font-size: 9px;
-      font-weight: 400;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      padding: 4px 10px;
-      border: 1px solid currentColor;
+      color: #4a9ebe;
+      text-align: center;
+      margin-bottom: 28px;
     }
 
-    .env-badge.dev  { color: #2563eb; }
-    .env-badge.prod { color: var(--accent); }
+    .s-section { margin-bottom: 26px; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      main { padding: 48px 24px 80px; }
-      h1 { font-size: clamp(52px, 16vw, 72px); }
-      .entry-header { grid-template-columns: 1fr; }
-      .edu-entry { grid-template-columns: 1fr; }
+    .s-heading {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #4a9ebe;
+      border-bottom: 1px solid #2e4259;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .s-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 300;
+      color: #c5d0da;
+    }
+
+    .s-contact-item .icon {
+      font-size: 12px;
+      margin-top: 1px;
+      flex-shrink: 0;
+      color: #4a9ebe;
+    }
+
+    .s-contact-item a {
+      color: #c5d0da;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .s-contact-item a:hover { color: #4a9ebe; }
+
+    .s-skill-group { margin-bottom: 14px; }
+
+    .s-skill-group-name {
+      font-size: 10px;
+      font-weight: 600;
+      color: #8aafc8;
+      margin-bottom: 5px;
+    }
+
+    .s-skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .s-skill {
+      font-size: 10px;
+      font-weight: 300;
+      color: #c5d0da;
+      background: rgba(74,158,190,0.1);
+      border: 1px solid rgba(74,158,190,0.2);
+      padding: 2px 7px;
+    }
+
+    .s-edu-item { margin-bottom: 12px; }
+
+    .s-edu-degree {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e8edf2;
+      line-height: 1.3;
+    }
+
+    .s-edu-school {
+      font-size: 10px;
+      font-weight: 300;
+      color: #8aafc8;
+      margin-top: 1px;
+    }
+
+    .s-edu-year {
+      font-size: 10px;
+      color: #4a9ebe;
+      margin-top: 1px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      padding: 36px 32px 36px 28px;
+    }
+
+    .summary {
+      background: #f7f9fb;
+      border-left: 3px solid #1c2b3a;
+      padding: 12px 16px;
+      margin-bottom: 28px;
+      font-size: 13px;
+      font-weight: 300;
+      color: #444;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .section { margin-bottom: 26px; }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      color: #1c2b3a;
+      border-bottom: 2px solid #1c2b3a;
+      padding-bottom: 4px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title span {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #4a9ebe;
+    }
+
+    .exp-item { margin-bottom: 18px; }
+    .exp-item:last-child { margin-bottom: 0; }
+
+    .exp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1px;
+    }
+
+    .exp-role {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .exp-date {
+      font-size: 11px;
+      font-weight: 300;
+      color: #888;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    .exp-company {
+      font-size: 12px;
+      font-weight: 400;
+      color: #4a9ebe;
+      margin-bottom: 7px;
+    }
+
+    .exp-company em {
+      font-style: normal;
+      color: #888;
+      font-weight: 300;
+    }
+
+    .exp-bullets { list-style: none; }
+
+    .exp-bullets li {
+      font-size: 12px;
+      font-weight: 300;
+      color: #333;
+      padding-left: 14px;
+      position: relative;
+      margin-bottom: 3px;
+      line-height: 1.5;
+    }
+
+    .exp-bullets li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: #1c2b3a;
+    }
+
+    .exp-item + .exp-item {
+      padding-top: 16px;
+      border-top: 1px dashed #e5e5e5;
+    }
+
+    .proj-item { margin-bottom: 16px; }
+    .proj-item:last-child { margin-bottom: 0; }
+
+    .proj-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 3px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .proj-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .proj-link {
+      font-size: 10px;
+      color: #4a9ebe;
+      text-decoration: none;
+      font-weight: 300;
+    }
+
+    .proj-link:hover { text-decoration: underline; }
+
+    .proj-desc {
+      font-size: 12px;
+      font-weight: 300;
+      color: #444;
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .proj-tag {
+      font-size: 10px;
+      font-weight: 400;
+      color: #1c2b3a;
+      background: #eef2f6;
+      border: 1px solid #d0dae4;
+      padding: 1px 7px;
+    }
+
+    .proj-item + .proj-item {
+      padding-top: 14px;
+      border-top: 1px dashed #e5e5e5;
+    }
+
+    /* ── CERTIFICATIONS ── */
+    .s-cert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #253646;
+    }
+
+    .s-cert-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .s-cert-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(74,158,190,0.15);
+      border: 1px solid rgba(74,158,190,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .s-cert-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e8edf2;
+      line-height: 1.3;
+    }
+
+    .s-cert-issuer {
+      font-size: 10px;
+      font-weight: 300;
+      color: #8aafc8;
+      margin-top: 1px;
+    }
+
+    .s-cert-year {
+      font-size: 10px;
+      color: #4a9ebe;
+      margin-top: 1px;
+    }
+
+    /* ── ACHIEVEMENTS ── */
+    .achv-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed #e5e5e5;
+    }
+
+    .achv-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+    .achv-icon {
+      width: 34px;
+      height: 34px;
+      background: #eef2f6;
+      border: 1px solid #d0dae4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .achv-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 3px;
+    }
+
+    .achv-desc {
+      font-size: 12px;
+      font-weight: 300;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .resume-footer {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e5e5;
+      font-size: 10px;
+      font-weight: 300;
+      color: #aaa;
+      display: flex;
+      justify-content: space-between;
     }
 
     @media print {
-      body::before { display: none; }
-      .sidebar-rule { display: none; }
-      main { padding: 32px; }
-      section { break-inside: avoid; }
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; width: 100%; min-height: auto; }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: 100%; grid-template-columns: 1fr; margin: 0; }
+      .sidebar { padding: 28px 20px; }
+      .main { padding: 24px 20px; }
     }
   </style>
 </head>
 <body>
 
-<div class="layout">
-  <div class="sidebar-rule"></div>
+<div class="page">
 
-  <main>
-    <!-- ── HEADER ── -->
-    <header>
-      <div class="issue-line">
-        <span>Curriculum Vitae</span>
-        &nbsp;·&nbsp; Software Engineer &nbsp;·&nbsp; <span id="year"></span>
+  <!-- ════ SIDEBAR ════ --> 
+  <aside class="sidebar">
+
+    <div class="avatar-box">KD</div>
+    <div class="sidebar-name">Kuldip Ramavat<br/>Kuldip</div>
+    <div class="sidebar-title">Engineer</div>
+
+    <div class="s-section">
+      <div class="s-heading">Contact</div>
+      <div class="s-contact-item">
+        <span class="icon">✉</span>
+        <a href="mailto:you@email.com">kuldipramavat93@gmail.com</a>
       </div>
-
-      <h1>Ramavat<br /><em>Kuldip</em></h1>
-
-      <p class="tagline">
-        Building systems that scale, products that matter,<br />
-        and interfaces people actually enjoy using.
-      </p>
-
-      <div class="contacts">
-        <a href="mailto:you@email.com">zoro.com</a>
-        <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a>
-        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
-        <a href="#">Portfolio</a>
-        <a href="#">+91 98765 43210</a>
+      <div class="s-contact-item">
+        <span class="icon">✆</span>
+        <span>+91 90*** *****</span>
       </div>
-    </header>
-
-    <!-- ── PULL QUOTE ── -->
-    <div class="pull-quote">
-      <p>"I care about the craft — clean architecture, thoughtful APIs, and interfaces that feel inevitable in retrospect."</p>
+      <div class="s-contact-item">
+        <span class="icon">⌂</span>
+        <span>Ahmedabad, Gujarat</span>
+      </div>
+      <div class="s-contact-item">
+        <span class="icon">⎆</span>
+        <a href="https://github.com/kuldip024" target="_blank">kuldip024</a>
+      </div>
+      <div class="s-contact-item">
+        <span class="icon">in</span>
+        <a href="https://www.linkedin.com/in/kuldip-ramavat/=" target="_blank">Kuldip Ramavat</a>
+      </div>
     </div>
 
-    <!-- ── EXPERIENCE ── -->
-    <section>
-      <div class="section-label">1 year</div>
+    <div class="s-section">
+      <div class="s-heading">Skills</div>
 
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">Senior Software Engineer</span>
-          <span class="entry-date">2022 — Present</span>
-        </div>
-        <div class="entry-org">Company Name &nbsp;·&nbsp; Location / Remote</div>
-        <div class="entry-body">
-          <p>Led architecture of a microservices platform handling 2M+ daily requests, reducing p95 latency by 40% through strategic caching and query optimization.</p>
-          <p>Drove adoption of CI/CD best practices across 3 engineering teams; reduced production incidents by 60% over 18 months.</p>
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">Languages</div>
+        <div class="s-skill-list">
+          <span class="s-skill">Python</span>
+          <span class="s-skill">SQL</span>
+          <span class="s-skill">Bash</span>
         </div>
       </div>
 
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">Software Engineer</span>
-          <span class="entry-date">2019 — 2022</span>
-        </div>
-        <div class="entry-org">Previous Company &nbsp;·&nbsp; City, State</div>
-        <div class="entry-body">
-          <p>Built and maintained React + Node.js SaaS product serving 50k+ users; shipped 3 major feature releases end-to-end.</p>
-          <p>Designed event-driven data pipeline using Kafka that cut reporting lag from 4 hours to under 90 seconds.</p>
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">Cloud</div>
+        <div class="s-skill-list">
+          <span class="s-skill">AWS</span>
+          <span class="s-skill">Azure Fundamentals</span>
         </div>
       </div>
 
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">Junior Developer</span>
-          <span class="entry-date">2017 — 2019</span>
-        </div>
-        <div class="entry-org">First Company &nbsp;·&nbsp; Remote</div>
-        <div class="entry-body">
-          <p>Developed REST APIs and internal tooling using Python/Django. Introduced automated test coverage from 12% to 78%.</p>
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">Containers & K8s</div>
+        <div class="s-skill-list">
+          <span class="s-skill">Docker</span>
+          <span class="s-skill">Kubernetes</span>
+          <span class="s-skill">Helm</span>
+          <span class="s-skill">Prometheus</span>
+          <span class="s-skill">Grafana</span>
         </div>
       </div>
-    </section>
 
-    <!-- ── SKILLS ── -->
-    <section>
-      <div class="section-label">Technical Skills</div>
-      <div class="skills-grid">
-        <div class="skill-item"><span>TypeScript</span></div>
-        <div class="skill-item"><span>React / Next.js</span></div>
-        <div class="skill-item"><span>Node.js</span></div>
-        <div class="skill-item"><span>Python</span></div>
-        <div class="skill-item"><span>Go</span></div>
-        <div class="skill-item"><span>PostgreSQL</span></div>
-        <div class="skill-item"><span>Redis</span></div>
-        <div class="skill-item"><span>Kafka</span></div>
-        <div class="skill-item"><span>Docker</span></div>
-        <div class="skill-item"><span>Kubernetes</span></div>
-        <div class="skill-item"><span>GitHub Actions</span></div>
-        <div class="skill-item"><span>AWS / GCP</span></div>
-        <div class="skill-item"><span>Terraform</span></div>
-        <div class="skill-item"><span>GraphQL</span></div>
-        <div class="skill-item"><span>Figma</span></div>
-        <div class="skill-item"><span>Linux</span></div>
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">CI / CD</div>
+        <div class="s-skill-list">
+          <span class="s-skill">Jenkins</span>
+          <span class="s-skill">ArgoCD</span>
+          <span class="s-skill">GitHub Actions</span>
+          <span class="s-skill">Git</span>
+        </div>
       </div>
-    </section>
 
-    <!-- ── EDUCATION ── -->
-    <section>
-      <div class="section-label">Education</div>
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">Infrastructure as Code</div>
+        <div class="s-skill-list">
+          <span class="s-skill">Terraform Fundamentals</span>
+          <span class="s-skill">Ansible</span>
+        </div>
+      </div>
 
-      <div class="edu-entry">
+      <div class="s-skill-group">
+        <div class="s-skill-group-name">Collaboration</div>
+        <div class="s-skill-list">
+          <span class="s-skill">Agile</span>
+          <span class="s-skill">Scrum</span>
+          <span class="s-skill">Jira</span>
+          <span class="s-skill">Confluence</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-section">
+      <div class="s-heading">Education</div>
+
+      <div class="s-edu-item">
+        <div class="s-edu-degree">B.E. — Electronics and Communication</div>
+        <div class="s-edu-school">L. D. College of Engineering </div>
+        <div class="s-edu-year">2022 – 2025</div>
+      </div>
+
+      <div class="s-edu-item">
+        <div class="s-edu-degree">Diploma — Electrical</div>
+        <div class="s-edu-school">L E College of Engineering</div>
+        <div class="s-edu-year">2019 – 2022</div>
+      </div>
+
+      <div class="s-edu-item">
+        <div class="s-edu-degree">10th Standard — SSC</div>
+        <div class="s-edu-school">Gyandeep Vidhyalaya</div>
+        <div class="s-edu-year">2019</div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATIONS -->
+    <div class="s-section">
+      <div class="s-heading">Certifications</div>
+
+      <div class="s-cert-item">
+        <div class="s-cert-icon">🔐</div>
         <div>
-          <div class="edu-degree">B.Tech in Computer Science &amp; Engineering</div>
-          <div class="edu-school">Your University Name &nbsp;·&nbsp; Ahmedabad, Gujarat</div>
+          <div class="s-cert-name">Junior Penetration Tester (eJPT)</div>
+          <div class="s-cert-issuer">INE</div>
+          <div class="s-cert-year">2025</div>
         </div>
-        <span class="entry-date">2013 — 2017</span>
       </div>
 
-      <div class="edu-entry">
+      <div class="s-cert-item">
+        <div class="s-cert-icon">🛡</div>
         <div>
-          <div class="edu-degree">AWS Certified Solutions Architect – Associate</div>
-          <div class="edu-school">Amazon Web Services</div>
-        </div>
-        <span class="entry-date">2021</span>
-      </div>
-    </section>
-
-    <!-- ── PROJECTS ── -->
-    <section>
-      <div class="section-label">Selected Projects</div>
-
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">OpenMetrics Dashboard</span>
-          <span class="entry-date">Open Source</span>
-        </div>
-        <div class="entry-org">github.com/yourusername/openmetrics</div>
-        <div class="entry-body">
-          <p>Real-time observability dashboard built with React, Rust (WASM), and WebSockets. 800+ GitHub stars. Adopted by 3 production teams.</p>
+          <div class="s-cert-name">Ethical Hacking Essentials (EHE)</div>
+          <div class="s-cert-issuer">EC-Council</div>
+          <div class="s-cert-year">2024</div>
         </div>
       </div>
 
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">CLI Deploy Tool</span>
-          <span class="entry-date">2023</span>
-        </div>
-        <div class="entry-org">Internal tooling</div>
-        <div class="entry-body">
-          <p>Zero-downtime deployment orchestrator for multi-env pipelines. Reduced deploy time from 18 min to under 4 min.</p>
+      <div class="s-cert-item">
+        <div class="s-cert-icon">☁</div>
+        <div>
+          <div class="s-cert-name">Certified Cloud Associate</div>
+          <div class="s-cert-issuer">INE</div>
+          <div class="s-cert-year">2025</div>
         </div>
       </div>
-    </section>
 
-    <!-- ── FOOTER ── -->
-    <footer>
-      <span class="footer-note">Last updated <span id="updated"></span> &nbsp;·&nbsp; PDF available on request</span>
-      <span class="env-badge" id="env-badge"></span>
-    </footer>
+      <div class="s-cert-item">
+        <div class="s-cert-icon">⎈</div>
+        <div>
+          <div class="s-cert-name">Kubernetes & CI/CD</div>
+          <div class="s-cert-issuer">KodeKloud</div>
+          <div class="s-cert-year">2026</div>
+        </div>
+      </div>
+
+    </div>
+
+  </aside>
+
+  <!-- ════ MAIN CONTENT ════ -->
+  <main class="main">
+
+    <div class="summary">
+      Cybersecurity, Network, and Cloud enthusiast with a strong foundation in Electronic & Communication Engineering. Skilled in penetration testing, Network design, and Automation, Skilled in leveraging emerging technologies to improve security and software quality. Passionate about VAPT, IoT, Cloud, and technology with proven record of delivering innovative solutions in academic and professional settings.
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="section">
+      <div class="section-title">Work Experience <span>/ Professional</span></div>
+
+      <div class="exp-item">
+        <div class="exp-top">
+          <span class="exp-role">GET</span>
+          <span class="exp-date">Jun 2025 – Present</span>
+        </div>
+        <div class="exp-company">Bosch Home Comfort Group<em>· Kadi, Gujarat</em></div>
+        <ul class="exp-bullets">
+          <li>Joined as a Graduate Engineer Trainee (GET) post-internship, continuing working on the Air Cloud Tap App while supporting additional projects</li>
+          <li>Gained hands-on experience in Testing & Automation, writing user stories in Jira, and supporting the Development, Cloud and Security teams.</li>
+          <li>Mentored fellow GETs on automation tools and best practices.</li>
+          <li>Built an AI-powered Automation Keyword Framework for Android with self-healing capabilities, enabling test case generation via prompts with no coding required</li>
+          <li>Fully Excel-driven upload/download, supporting app functionality & string validation, test suite creation, and automated PDF report generation</li>
+          <li>Contributed to automation development for Bosch Robert and delivered the product to market on schedule</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="section">
+      <div class="section-title">Projects <span>/ Key Work</span></div>
+
+      <div class="proj-item">
+        <div class="proj-top">
+          <span class="proj-name">Automated Resume Deployment Pipeline - DevEnv/Production CI/CD</span>
+          <a class="proj-link" href="https://github.com/kuldip024/resume" target="_blank">resume ↗</a>
+        </div>
+        <div class="proj-desc">
+          -	I built a CI/CD pipeline from scratch using GitHub Actions that automatically deploys my resume to GitHub Pages. It has two separate environments – dev deploys instantly on every push; production requires manual approval before going live. Every production release is auto-tagged in auto-tagged in Git so I can track and roll back any version.
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">GitHub Actions</span>
+          <span class="proj-tag">GitHub Pages</span>
+          <span class="proj-tag">CI/CD</span>
+          <span class="proj-tag">YAML</span>
+          <span class="proj-tag">Bash</span>
+          <span class="proj-tag">Git Branching</span>
+        </div>
+      </div>
+
+      <div class="proj-item">
+        <div class="proj-top">
+          <span class="proj-name">IP-Based Camera Security</span>
+        </div>
+        <div class="proj-desc">
+          -	Tested an IP-based, camera, successfully uncovering the login password through strategic attacks. This project highlighted skills in cybersecurity, network protocols, and ethical hacking.
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Research</span>
+          <span class="proj-tag">Network</span>
+          <span class="proj-tag">Python</span>
+          <span class="proj-tag">Kali Linux</span>
+        </div>
+      </div>
+
+      <div class="proj-item">
+        <div class="proj-top">
+          <span class="proj-name">Enterprise Network Simulation (Cisco Packet Trcer)</span>
+          <a class="proj-link" href="https://github.com/kuldip024/packet-tracer-enterprise-network" target="_blank">Enterprise Network Simulation  ↗</a>
+        </div>
+        <div class="proj-desc">
+          -	Designed and implemented a full scale enterprise networking using Cisco Packet Tracer, featuring VLANs, DHCP, DNS, FTP, WLC, firewall(ASA), and a VPN tunnel. Focused on secure inter-site communication, logical segmentation, and real-world topology simulation.
+        </div>
+        <div class="proj-tags">
+          <span class="proj-tag">Cisco Packet Tracer</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="section">
+      <div class="section-title">Achievements <span>/ Recognition</span></div>
+
+      <div class="achv-item">
+        <div class="achv-icon">🏆</div>
+        <div>
+          <div class="achv-title">AIR 30 — AICTE Pentathon 2024</div>
+          <div class="achv-desc">
+            Secured All India Rank 30 in the national-level AICTE Pentathon, demonstrating strong problem-solving and technical skills among thousands of participants.
+          </div>
+        </div>
+      </div>
+
+      <div class="achv-item">
+        <div class="achv-icon">🧠</div>
+        <div>
+          <div class="achv-title">75+ CTF Challenges Solved (PicoCTF)</div>
+          <div class="achv-desc">
+            Successfully solved over 75 Capture The Flag (CTF) challenges on the PicoCTF platform, covering web exploitation, cryptography, and reverse engineering.
+          </div>
+        </div>
+      </div>
+
+      <div class="achv-item">
+        <div class="achv-icon">🚀</div>
+        <div>
+          <div class="achv-title">Selected for Smart India Hackathon (SIH)</div>
+          <div class="achv-desc">
+            Chosen from the university level to participate in the national Smart India Hackathon, showcasing innovation and teamwork in real-world problem solving.
+          </div>
+        </div>
+      </div>
+
+      <div class="achv-item">
+        <div class="achv-icon">⚽</div>
+        <div>
+          <div class="achv-title">Sports Achievements — Football</div>
+          <div class="achv-desc">
+            Won Silver Medal at college-level football competition and Gold Medal at school-level tournament, demonstrating teamwork and leadership.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="resume-footer">
+      <span>References available upon request.</span>
+      <span id="resume-date"></span>
+    </div>
+
   </main>
 </div>
 
 <script>
-  // Inject year & date
-  const y = new Date().getFullYear();
-  document.getElementById('year').textContent = y;
-  document.getElementById('updated').textContent = new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
-  // Show environment badge from injected ENV variable or meta tag
-  const envMeta = document.querySelector('meta[name="deploy-env"]');
-  const env = (envMeta && envMeta.content) || 'local';
-  const badge = document.getElementById('env-badge');
-  badge.textContent = env.toUpperCase();
-  badge.className = 'env-badge ' + (env === 'production' ? 'prod' : 'dev');
+  document.getElementById('resume-date').textContent =
+    'Updated ' + new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 </script>
+
 </body>
 </html>
